@@ -6,10 +6,26 @@ import Chat from './components/Chat';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {initializeApp} from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
 
 // create navigator
 const stack = createNativeStackNavigator();
 
+const firebaseConfig = {
+  apiKey: "AIzaSyCAe3x3j1KDRbEOe6iKQLB7627OtTrz5D4",
+  authDomain: "shopping-list-644bf.firebaseapp.com",
+  projectId: "shopping-list-644bf",
+  storageBucket: "shopping-list-644bf.appspot.com",
+  messagingSenderId: "427206698890",
+  appId: "1:427206698890:web:60cbd3d2d62dd8dd5eca73"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);
 
 export default function App() {
   
@@ -24,8 +40,9 @@ export default function App() {
          />
         <stack.Screen
         name='Chat'
-        component={Chat}
-        /> 
+        > 
+        {props => <Chat  db={db} {...props} />}
+        </stack.Screen>
       </stack.Navigator>
     </NavigationContainer>
   )
