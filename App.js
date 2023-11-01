@@ -8,6 +8,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {initializeApp} from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 // create navigator
 const stack = createNativeStackNavigator();
@@ -24,11 +25,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);
 
 export default function App() {
-  
+  const connectionStatus = useNetInfo();
   return (
     <NavigationContainer>
       <stack.Navigator
@@ -41,7 +43,7 @@ export default function App() {
         <stack.Screen
         name='Chat'
         > 
-        {props => <Chat  db={db} {...props} />}
+        {props => <Chat isConnected={connectionStatus.isConnected} db={db} {...props} />}
         </stack.Screen>
       </stack.Navigator>
     </NavigationContainer>
