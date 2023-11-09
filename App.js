@@ -8,6 +8,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {initializeApp} from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import {getStorage} from 'firebase/storage';
 import { useNetInfo } from '@react-native-community/netinfo';
 
 // create navigator
@@ -24,6 +25,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 
 import { LogBox } from 'react-native';
@@ -43,7 +45,7 @@ export default function App() {
         <stack.Screen
         name='Chat'
         > 
-        {props => <Chat isConnected={connectionStatus.isConnected} db={db} {...props} />}
+        {props => <Chat isConnected={connectionStatus.isConnected} db={db} storage={storage} {...props} />}
         </stack.Screen>
       </stack.Navigator>
     </NavigationContainer>

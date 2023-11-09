@@ -4,9 +4,10 @@ import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
 import { Platform, KeyboardAvoidingView, Alert } from "react-native";
 import { addDoc, collection, disableNetwork, enableNetwork, onSnapshot, orderBy, query } from "firebase/firestore";
 import AsyncStorage  from "@react-native-async-storage/async-storage";
+import CustomActions from "./CustomActions";
+import MapView from 'react-native-maps';
 
-
-const Chat = ({ route, navigation, isConnected, db }) => {
+const Chat = ({ route, navigation, isConnected, db, storage}) => {
   const username = route.params.name;
   const color = route.params.color;
   const id = route.params.id;
@@ -65,6 +66,31 @@ const Chat = ({ route, navigation, isConnected, db }) => {
        if(isConnected) return <InputToolbar {...props} />;
        else return null;
   }
+  // Function in order to customize the actions
+  const renderCustomActions = (props) => {
+    return <CustomActions storage={storage} userID={id} {...props}/>;
+  }
+
+  const renderCustomView = (props) => {
+    const {currentMessage} = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+        style={{width: 150,
+          height: 100,
+          borderRadius: 13,
+          margin: 3}}
+        region={{
+          latitude: currentMessage.location.latitude,
+          longitude: currentMessage.location.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      />
+      );
+    }
+    return null;
+  }
   // Function to load messages from cashe if there is no connection
   const loadCashedMessages = async () => {
     const cashedMessages = await AsyncStorage.getItem("messages") || [];
@@ -85,6 +111,8 @@ const Chat = ({ route, navigation, isConnected, db }) => {
         messages={messages}
         renderBubble={renderBubble}
         renderInputToolbar={renderInput}
+        renderActions={renderCustomActions}
+        renderCustomView={renderCustomView}
         onSend={messages => onSend(messages)}
         user={{
           _id: id,
